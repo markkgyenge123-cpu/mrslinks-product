@@ -41,12 +41,22 @@ http://localhost:8080
 Use these Cloudflare Pages settings:
 
 - Framework preset: `None`
-- Build command: leave empty
+- Build command: leave empty, or use `exit 0`
 - Build output directory: `/`
 - Root directory: `/`
 - Production branch: `main`
 
 Cloudflare Pages will serve the root-level `index.html`.
+
+Important: do **not** use `npx wrangler deploy` for this project. That deploys to Cloudflare Workers, not the intended free Cloudflare Pages URL.
+
+If Cloudflare shows a live URL like this:
+
+```text
+https://mrslinks-product.<account>.workers.dev
+```
+
+then the project was deployed as a Worker by mistake. Create a new **Pages** project using **Connect to Git** instead.
 
 ## GitHub Setup
 
@@ -76,7 +86,7 @@ Replace `YOUR_USERNAME` with your GitHub username.
    - Project name: `mrslinks-product`
    - Production branch: `main`
    - Framework preset: `None`
-   - Build command: leave empty
+   - Build command: leave empty, or use `exit 0`
    - Build output directory: `/`
 9. Click **Save and Deploy**.
 
