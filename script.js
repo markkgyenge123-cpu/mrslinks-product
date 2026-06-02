@@ -367,7 +367,7 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
   });
 });
 
-document.querySelectorAll('.ghost-button, .contact-button, .service-card, .project-card').forEach((element) => {
+document.querySelectorAll('.ghost-button, .contact-button, .instagram-cta, .service-card, .project-card').forEach((element) => {
   element.addEventListener('pointerenter', () => element.classList.add('interactive-active'));
   element.addEventListener('pointerleave', () => element.classList.remove('interactive-active'));
 });
