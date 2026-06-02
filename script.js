@@ -15,7 +15,7 @@ const showContentImmediately = () => {
     item.style.opacity = '1';
     item.style.transform = 'none';
   });
-  document.querySelectorAll('.product-panel').forEach((item) => {
+  document.querySelectorAll('.hero-visual').forEach((item) => {
     item.style.opacity = '1';
     item.style.transform = 'none';
   });
@@ -60,8 +60,7 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
   gsap.set('.preloader-dust span', { autoAlpha: 0, y: 18, scale: 0.72 });
   gsap.set('.preloader-brush', { autoAlpha: 0, x: '-68vw' });
   gsap.set(['.hero-status .word', '.hero-brand .word', '.intro .word', '.ghost-button'], { autoAlpha: 0, y: 24, filter: 'blur(9px)' });
-  gsap.set('.hero-product', { autoAlpha: 0, y: 34, rotateX: 8, filter: 'blur(14px)' });
-  gsap.set('.product-panel', { autoAlpha: 0, y: 28, filter: 'blur(12px)' });
+  gsap.set('.hero-visual', { autoAlpha: 0, y: 28, filter: 'blur(10px)' });
   gsap.set('.hero-rule', { autoAlpha: 0, clipPath: 'inset(0 50% 0 50%)' });
   gsap.set('.hero-inner', { scale: 1.025, y: 18 });
   gsap.set('.brand-wall span, .hero-frame, .hero-orbit', { autoAlpha: 0, y: 46, filter: 'blur(18px)' });
@@ -116,8 +115,7 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     .to('.hero-brand .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.045, duration: 0.7, ease: 'power3.out' }, 'heroReveal+=0.28')
     .to('.intro .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.02, duration: 0.52 }, 'heroReveal+=0.62')
     .to('.ghost-button', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.08, duration: 0.52 }, 'heroReveal+=0.78')
-    .to('.hero-product', { autoAlpha: 1, y: 0, rotateX: 0, filter: 'blur(0px)', duration: 0.78, ease: 'power3.out' }, 'heroReveal+=0.42')
-    .to('.product-panel', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.12, duration: 0.58, ease: 'power3.out' }, 'heroReveal+=0.6')
+    .to('.hero-visual', { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.72, ease: 'power3.out' }, 'heroReveal+=0.46')
     .to('.hero-rule', { autoAlpha: 0.38, clipPath: 'inset(0 0% 0 0%)', duration: 0.56, ease: 'expo.inOut' }, 'heroReveal+=1.08');
 
   gsap.to('.hero-inner', {
@@ -161,10 +159,9 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.4 }
   });
 
-  gsap.to('.hero-product', {
-    y: 32,
-    rotateY: -3,
-    opacity: 0.72,
+  gsap.to('.hero-visual', {
+    y: 18,
+    opacity: 0.78,
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.2 }
   });
 
