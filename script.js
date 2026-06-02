@@ -15,7 +15,10 @@ const showContentImmediately = () => {
     item.style.opacity = '1';
     item.style.transform = 'none';
   });
-  document.querySelector('.brush-logo')?.style.setProperty('clip-path', 'none');
+  document.querySelectorAll('.product-panel').forEach((item) => {
+    item.style.opacity = '1';
+    item.style.transform = 'none';
+  });
   document.querySelector('.preloader')?.remove();
 };
 
@@ -56,12 +59,13 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
   gsap.set('.preloader-dust', { autoAlpha: 0 });
   gsap.set('.preloader-dust span', { autoAlpha: 0, y: 18, scale: 0.72 });
   gsap.set('.preloader-brush', { autoAlpha: 0, x: '-68vw' });
-  gsap.set(['.creator .word', '.hero-status .word', '.hero-brand .word', '.brush-logo .word', '.intro .word', '.hero-micro .word', '.ghost-button'], { autoAlpha: 0, y: 24, filter: 'blur(9px)' });
-  gsap.set('.hero-capability-rail', { autoAlpha: 0, y: 18, filter: 'blur(8px)' });
+  gsap.set(['.hero-status .word', '.hero-brand .word', '.intro .word', '.ghost-button'], { autoAlpha: 0, y: 24, filter: 'blur(9px)' });
+  gsap.set('.hero-product', { autoAlpha: 0, y: 34, rotateX: 8, filter: 'blur(14px)' });
+  gsap.set('.product-panel', { autoAlpha: 0, y: 28, filter: 'blur(12px)' });
   gsap.set('.hero-rule', { autoAlpha: 0, clipPath: 'inset(0 50% 0 50%)' });
   gsap.set('.hero-inner', { scale: 1.025, y: 18 });
-  gsap.set('.brand-wall span, .hero-frame, .hero-orbit, .hero-side-panel', { autoAlpha: 0, y: 46, filter: 'blur(18px)' });
-  gsap.set('.hero-depth, .hero-slash', { autoAlpha: 0 });
+  gsap.set('.brand-wall span, .hero-frame, .hero-orbit', { autoAlpha: 0, y: 46, filter: 'blur(18px)' });
+  gsap.set('.hero-depth', { autoAlpha: 0 });
   gsap.set('.site-header', { autoAlpha: 0, y: -12 });
 
   const introTimeline = gsap.timeline({
@@ -103,20 +107,17 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     }, null, 'handoff+=0.76')
     .to('.spotlight', { opacity: 0.58, duration: 0.9, ease: 'power2.out' }, 'handoff+=0.12')
     .to('.hero-frame', { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.86, ease: 'power3.out' }, 'handoff+=0.2')
-    .to('.hero-orbit', { autoAlpha: 0.92, y: 0, filter: 'blur(0px)', duration: 0.95, ease: 'power3.out' }, 'handoff+=0.24')
-    .to('.hero-side-panel', { autoAlpha: 0.78, y: 0, filter: 'blur(0px)', stagger: 0.08, duration: 0.82, ease: 'power3.out' }, 'handoff+=0.32')
+    .to('.hero-orbit', { autoAlpha: 0.58, y: 0, filter: 'blur(0px)', duration: 0.95, ease: 'power3.out' }, 'handoff+=0.24')
     .to('.brand-wall span', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.1, duration: 0.78 }, 'handoff+=0.26')
-    .to('.hero-depth', { autoAlpha: 0.72, stagger: 0.07, duration: 0.72, ease: 'power2.out' }, 'handoff+=0.36')
+    .to('.hero-depth', { autoAlpha: 0.46, stagger: 0.07, duration: 0.72, ease: 'power2.out' }, 'handoff+=0.36')
     .to('.hero-inner', { scale: 1, y: 0, duration: 1, ease: 'power3.out' }, 'heroReveal-=0.1')
     .to('.site-header', { autoAlpha: 1, y: 0, duration: 0.72, ease: 'power3.out' }, 'heroReveal')
-    .to('.creator .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.055, duration: 0.58 }, 'heroReveal+=0.12')
-    .to('.hero-status .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.04, duration: 0.52 }, 'heroReveal+=0.18')
-    .to('.hero-brand .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.065, duration: 0.7, ease: 'power3.out' }, 'heroReveal+=0.3')
-    .to('.brush-logo .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.055, duration: 0.66, ease: 'power3.out' }, 'heroReveal+=0.52')
-    .to('.hero-capability-rail', { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.58, ease: 'power3.out' }, 'heroReveal+=0.7')
-    .to('.intro .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.024, duration: 0.52 }, 'heroReveal+=0.88')
-    .to('.ghost-button', { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.52 }, 'heroReveal+=1.02')
-    .to('.hero-micro .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.028, duration: 0.42 }, 'heroReveal+=1.16')
+    .to('.hero-status .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.04, duration: 0.52 }, 'heroReveal+=0.16')
+    .to('.hero-brand .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.045, duration: 0.7, ease: 'power3.out' }, 'heroReveal+=0.28')
+    .to('.intro .word', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.02, duration: 0.52 }, 'heroReveal+=0.62')
+    .to('.ghost-button', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.08, duration: 0.52 }, 'heroReveal+=0.78')
+    .to('.hero-product', { autoAlpha: 1, y: 0, rotateX: 0, filter: 'blur(0px)', duration: 0.78, ease: 'power3.out' }, 'heroReveal+=0.42')
+    .to('.product-panel', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.12, duration: 0.58, ease: 'power3.out' }, 'heroReveal+=0.6')
     .to('.hero-rule', { autoAlpha: 0.38, clipPath: 'inset(0 0% 0 0%)', duration: 0.56, ease: 'expo.inOut' }, 'heroReveal+=1.08');
 
   gsap.to('.hero-inner', {
@@ -160,15 +161,10 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.4 }
   });
 
-  gsap.to('.hero-side-panel-left', {
-    y: -30,
-    opacity: 0.42,
-    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.2 }
-  });
-
-  gsap.to('.hero-side-panel-right', {
-    y: 34,
-    opacity: 0.42,
+  gsap.to('.hero-product', {
+    y: 32,
+    rotateY: -3,
+    opacity: 0.72,
     scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.2 }
   });
 
