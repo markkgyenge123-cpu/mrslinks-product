@@ -26,7 +26,7 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
 
   if (window.Lenis && !touchDevice) {
     lenis = new Lenis({
-      duration: 1.25,
+      duration: 0.88,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       anchors: false
@@ -56,7 +56,6 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
   gsap.set('.hero-inner', { scale: 1.08 });
   gsap.set('.brand-wall span', { autoAlpha: 0, y: 38, filter: 'blur(16px)' });
   gsap.set('.hero-slash', { autoAlpha: 0, x: 0 });
-  gsap.set('.smoke', { scale: 0.96 });
 
   const introTimeline = gsap.timeline({
     defaults: { ease: 'power4.out' },
@@ -72,7 +71,7 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     .to('.preloader-line', { scaleX: 1, duration: 0.95, ease: 'expo.inOut' }, '-=0.35')
     .to('.preloader-mark', { autoAlpha: 0, y: -18, filter: 'blur(10px)', duration: 0.65 }, '+=0.1')
     .to('.preloader', { autoAlpha: 0, duration: 0.9, ease: 'expo.inOut' }, '-=0.25')
-    .to('.smoke', { scale: 1.08, duration: 2.8, ease: 'power2.out' }, '-=0.9')
+    .to('.spotlight', { opacity: 0.92, duration: 2.8, ease: 'power2.out' }, '-=0.9')
     .to('.brand-wall span', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.12, duration: 1.15 }, '-=1.15')
     .to('.hero-slash', { autoAlpha: 1, x: '160vw', duration: 0.72, ease: 'expo.inOut' }, '-=0.6')
     .to('.hero-slash', { autoAlpha: 0, duration: 0.18 }, '-=0.15')
@@ -171,15 +170,12 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     });
   });
 
-  gsap.to('.phone-front', { y: -16, rotateZ: -4.5, duration: 7, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-  gsap.to('.phone-back', { y: 14, rotateZ: 5.5, duration: 8.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
-
   gsap.to('.phone-front', {
-    yPercent: -12,
+    '--scroll-y': '-38px',
     scrollTrigger: { trigger: '.showcase', start: 'top bottom', end: 'bottom top', scrub: 1.2 }
   });
   gsap.to('.phone-back', {
-    yPercent: 10,
+    '--scroll-y': '30px',
     scrollTrigger: { trigger: '.showcase', start: 'top bottom', end: 'bottom top', scrub: 1.2 }
   });
 
@@ -333,21 +329,20 @@ document.querySelectorAll('[data-tilt]').forEach((phone) => {
     const x = (event.clientX - rect.left) / rect.width - 0.5;
     const y = (event.clientY - rect.top) / rect.height - 0.5;
     gsap.to(phone, {
-      rotateY: x * 16,
-      rotateX: -y * 12,
-      z: 30,
-      duration: 0.45,
+      '--tilt-y': `${x * 12}deg`,
+      '--tilt-x': `${-y * 9}deg`,
+      '--lift-z': '24px',
+      duration: 0.28,
       ease: 'power3.out'
     });
   });
 
   phone.addEventListener('pointerleave', () => {
-    const isFront = phone.classList.contains('phone-front');
     gsap.to(phone, {
-      rotateX: isFront ? 8 : -4,
-      rotateY: isFront ? -10 : 10,
-      z: 0,
-      duration: 0.7,
+      '--tilt-y': '0deg',
+      '--tilt-x': '0deg',
+      '--lift-z': '0px',
+      duration: 0.55,
       ease: 'power3.out'
     });
   });

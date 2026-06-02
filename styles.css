@@ -12,6 +12,36 @@
   --my: 40%;
 }
 
+@property --float-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --tilt-x {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --tilt-y {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@property --lift-z {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -825,6 +855,15 @@ blockquote p {
 
 .phone {
   position: absolute;
+  --base-rx: 0deg;
+  --base-ry: 0deg;
+  --base-rz: 0deg;
+  --base-scale: 1;
+  --float-y: 0px;
+  --scroll-y: 0px;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --lift-z: 0px;
   width: min(17rem, 46vw);
   aspect-ratio: 0.52;
   border: 1px solid rgba(246,246,241,0.62);
@@ -832,6 +871,13 @@ blockquote p {
   background: #030303;
   box-shadow: 0 2.5rem 5.8rem rgba(0,0,0,0.94), 0 0 46px rgba(255,255,255,0.06);
   transform-style: preserve-3d;
+  transform:
+    translate3d(0, calc(var(--float-y) + var(--scroll-y)), var(--lift-z))
+    rotateX(calc(var(--base-rx) + var(--tilt-x)))
+    rotateY(calc(var(--base-ry) + var(--tilt-y)))
+    rotateZ(var(--base-rz))
+    scale(var(--base-scale));
+  transition: box-shadow 260ms ease, border-color 260ms ease;
   will-change: transform;
 }
 
@@ -869,14 +915,26 @@ blockquote p {
   left: 12%;
   top: 0;
   z-index: 2;
-  transform: rotateX(8deg) rotateY(-10deg) rotateZ(-6deg);
+  --base-rx: 8deg;
+  --base-ry: -10deg;
+  --base-rz: -6deg;
+  animation: phoneFloatFront 7.5s ease-in-out infinite;
 }
 
 .phone-back {
   right: 8%;
   top: 4.5rem;
   opacity: 0.74;
-  transform: rotateX(-4deg) rotateY(10deg) rotateZ(7deg) scale(0.92);
+  --base-rx: -4deg;
+  --base-ry: 10deg;
+  --base-rz: 7deg;
+  --base-scale: 0.92;
+  animation: phoneFloatBack 9s ease-in-out infinite;
+}
+
+.phone:hover {
+  border-color: rgba(246,246,241,0.78);
+  box-shadow: 0 3rem 6.4rem rgba(0,0,0,0.96), 0 0 58px rgba(255,255,255,0.09);
 }
 
 .phone-screen {
@@ -1182,6 +1240,16 @@ cite {
   68%, 100% { transform: translateX(360%) skewX(-18deg); opacity: 0; }
 }
 
+@keyframes phoneFloatFront {
+  0%, 100% { --float-y: 0px; }
+  50% { --float-y: -14px; }
+}
+
+@keyframes phoneFloatBack {
+  0%, 100% { --float-y: 0px; }
+  50% { --float-y: 12px; }
+}
+
 @keyframes screenPulse {
   0%, 100% { opacity: 0.14; }
   50% { opacity: 0.3; }
@@ -1196,6 +1264,14 @@ cite {
   .cursor,
   .hero-depth,
   .brand-wall {
+    display: none;
+  }
+
+  .particles,
+  .edge-scratches,
+  .brush-flash,
+  .smoke-three,
+  .smoke-four {
     display: none;
   }
 
@@ -1220,6 +1296,7 @@ cite {
 
   .phone {
     width: min(14rem, 58vw);
+    animation-duration: 10s;
   }
 
   .phone-front {
