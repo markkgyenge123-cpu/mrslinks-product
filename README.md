@@ -11,7 +11,7 @@ This is a static HTML/CSS/JavaScript website.
 - Scripts: `script.js`
 - Backend: none
 - Paid hosting required: no
-- Recommended host: Cloudflare Pages free plan
+- Current live host: Cloudflare Workers static assets
 
 The site uses CDN-hosted frontend animation libraries:
 
@@ -36,27 +36,35 @@ Then visit:
 http://localhost:8080
 ```
 
-## Deploy to Cloudflare Pages
+## Live Website
 
-Use these Cloudflare Pages settings:
+Current live URL:
+
+```text
+https://mrslinks-product2.markkgyenge123.workers.dev
+```
+
+## Deploy / Update
+
+Push changes to GitHub, then redeploy from Cloudflare:
+
+```bash
+git add .
+git commit -m "Update website"
+git push origin main
+```
+
+This project is static and can be hosted for free on Cloudflare as static assets.
+
+## Optional Cloudflare Pages Settings
+
+If you later want to move it to Cloudflare Pages, use:
 
 - Framework preset: `None`
 - Build command: leave empty, or use `exit 0`
 - Build output directory: `/`
 - Root directory: `/`
 - Production branch: `main`
-
-Cloudflare Pages will serve the root-level `index.html`.
-
-Important: do **not** use `npx wrangler deploy` for this project. That deploys to Cloudflare Workers, not the intended free Cloudflare Pages URL.
-
-If Cloudflare shows a live URL like this:
-
-```text
-https://mrslinks-product.<account>.workers.dev
-```
-
-then the project was deployed as a Worker by mistake. Create a new **Pages** project using **Connect to Git** instead.
 
 ## GitHub Setup
 
@@ -90,7 +98,7 @@ Replace `YOUR_USERNAME` with your GitHub username.
    - Build output directory: `/`
 9. Click **Save and Deploy**.
 
-Your free Cloudflare Pages URL should look like:
+Your free Cloudflare Pages URL would look like:
 
 ```text
 https://mrslinks-product.pages.dev
