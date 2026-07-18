@@ -44,6 +44,8 @@
   <div class="smoke smoke-two" data-depth="0.2" aria-hidden="true"></div>
   <div class="smoke smoke-three" data-depth="-0.1" aria-hidden="true"></div>
   <div class="smoke smoke-four" data-depth="0.16" aria-hidden="true"></div>
+  <div class="chapter-ambient" aria-hidden="true"></div>
+  <div class="chapter-sweep" aria-hidden="true"></div>
 
   <video
     class="scroll-video"
@@ -61,6 +63,24 @@
     <source src="background-new-mobile-hq.m4v?v=20260719-3" type="video/mp4" media="(max-width: 860px)">
     <source src="background-new-1080p.m4v?v=20260719-3" type="video/mp4">
   </video>
+
+  <nav class="chapter-nav" aria-label="Page chapters">
+    <div class="chapter-readout" aria-live="polite">
+      <span class="chapter-number">01</span>
+      <span class="chapter-title">Studio</span>
+    </div>
+    <div class="chapter-rail">
+      <span class="chapter-progress" aria-hidden="true"></span>
+      <a href="#hero" data-chapter-index="0" aria-label="Go to Studio section" aria-current="true"><span></span></a>
+      <a href="#about" data-chapter-index="1" aria-label="Go to About section"><span></span></a>
+      <a href="#services" data-chapter-index="2" aria-label="Go to Services section"><span></span></a>
+      <a href="#process" data-chapter-index="3" aria-label="Go to Process section"><span></span></a>
+      <a href="#quality" data-chapter-index="4" aria-label="Go to Quality section"><span></span></a>
+      <a href="#for-who" data-chapter-index="5" aria-label="Go to Audience section"><span></span></a>
+      <a href="#contact" data-chapter-index="6" aria-label="Go to Contact section"><span></span></a>
+    </div>
+    <span class="chapter-mobile-count" aria-live="polite">01 / 07</span>
+  </nav>
 
   <header class="site-header" aria-label="Primary navigation">
     <a class="brand-mark magnetic" href="#hero" aria-label="Mr.Slink's Product home">

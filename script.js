@@ -133,6 +133,141 @@ if (scrollVideo) {
   window.addEventListener('touchstart', playBackgroundVideo, { once: true, passive: true });
 }
 
+// Native chapter tracking remains available even when animation CDNs are unavailable.
+const chapterMeta = [
+  { id: 'hero', label: 'Studio', rgb: '191, 247, 255', x: '72%', y: '34%' },
+  { id: 'about', label: 'About', rgb: '171, 139, 255', x: '28%', y: '44%' },
+  { id: 'services', label: 'Services', rgb: '226, 104, 160', x: '72%', y: '48%' },
+  { id: 'process', label: 'Process', rgb: '126, 220, 255', x: '34%', y: '56%' },
+  { id: 'quality', label: 'Quality', rgb: '238, 235, 224', x: '68%', y: '42%' },
+  { id: 'for-who', label: 'Audience', rgb: '179, 128, 220', x: '30%', y: '58%' },
+  { id: 'contact', label: 'Contact', rgb: '230, 112, 155', x: '56%', y: '46%' }
+];
+const chapterSections = chapterMeta.map(({ id }) => document.getElementById(id)).filter(Boolean);
+const chapterLinks = Array.from(document.querySelectorAll('[data-chapter-index]'));
+const chapterNumber = document.querySelector('.chapter-number');
+const chapterTitle = document.querySelector('.chapter-title');
+const chapterReadout = document.querySelector('.chapter-readout');
+const chapterMobileCount = document.querySelector('.chapter-mobile-count');
+const chapterProgress = document.querySelector('.chapter-progress');
+const chapterAmbient = document.querySelector('.chapter-ambient');
+const chapterSweep = document.querySelector('.chapter-sweep');
+let activeChapterIndex = -1;
+let chapterTextTimer = 0;
+let chapterEffectTimer = 0;
+let lastSweepAt = 0;
+let heroShimmerPlayed = false;
+
+const padChapter = (value) => String(value).padStart(2, '0');
+
+const activateChapter = (index) => {
+  if (index < 0 || index >= chapterMeta.length || index === activeChapterIndex) return;
+
+  const chapter = chapterMeta[index];
+  const previousIndex = activeChapterIndex;
+  activeChapterIndex = index;
+  document.documentElement.style.setProperty('--chapter-rgb', chapter.rgb);
+  document.documentElement.style.setProperty('--chapter-x', chapter.x);
+  document.documentElement.style.setProperty('--chapter-y', chapter.y);
+
+  chapterLinks.forEach((link, linkIndex) => {
+    if (linkIndex === index) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  });
+
+  if (chapterProgress) {
+    chapterProgress.style.setProperty('--chapter-progress', String((index + 1) / chapterMeta.length));
+  }
+  if (chapterMobileCount) {
+    chapterMobileCount.textContent = `${padChapter(index + 1)} / ${padChapter(chapterMeta.length)}`;
+  }
+
+  window.clearTimeout(chapterTextTimer);
+  if (reduceMotion || previousIndex < 0) {
+    if (chapterNumber) chapterNumber.textContent = padChapter(index + 1);
+    if (chapterTitle) chapterTitle.textContent = chapter.label;
+  } else if (chapterReadout) {
+    chapterReadout.classList.add('is-updating');
+    chapterTextTimer = window.setTimeout(() => {
+      if (chapterNumber) chapterNumber.textContent = padChapter(index + 1);
+      if (chapterTitle) chapterTitle.textContent = chapter.label;
+      chapterReadout.classList.remove('is-updating');
+    }, 145);
+  }
+
+  if (chapterAmbient && !reduceMotion) {
+    chapterAmbient.classList.add('is-changing');
+    window.setTimeout(() => chapterAmbient.classList.remove('is-changing'), 240);
+  }
+
+  const now = performance.now();
+  const canSweep = (
+    previousIndex >= 0
+    && !reduceMotion
+    && !touchDevice
+    && !mobile()
+    && document.body.classList.contains('is-loaded')
+    && now - lastSweepAt > 700
+  );
+  if (canSweep && chapterSweep) {
+    lastSweepAt = now;
+    window.clearTimeout(chapterEffectTimer);
+    chapterSweep.classList.remove('is-sweeping');
+    void chapterSweep.offsetWidth;
+    chapterSweep.classList.add('is-sweeping');
+    chapterEffectTimer = window.setTimeout(() => chapterSweep.classList.remove('is-sweeping'), 620);
+  }
+};
+
+const selectNearestChapter = () => {
+  if (!chapterSections.length) return;
+  const viewportCenter = window.innerHeight / 2;
+  let nearestIndex = 0;
+  let nearestDistance = Infinity;
+
+  chapterSections.forEach((section, index) => {
+    const rect = section.getBoundingClientRect();
+    const sectionCenter = rect.top + Math.min(rect.height, window.innerHeight) / 2;
+    const containsCenter = rect.top <= viewportCenter && rect.bottom >= viewportCenter;
+    const distance = containsCenter ? 0 : Math.abs(sectionCenter - viewportCenter);
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestIndex = index;
+    }
+  });
+  activateChapter(nearestIndex);
+};
+
+if (chapterSections.length) {
+  const chapterObserver = new IntersectionObserver(selectNearestChapter, {
+    rootMargin: '-42% 0px -42% 0px',
+    threshold: [0, 0.01]
+  });
+  chapterSections.forEach((section) => chapterObserver.observe(section));
+  window.addEventListener('pageshow', selectNearestChapter);
+  window.addEventListener('resize', selectNearestChapter, { passive: true });
+  selectNearestChapter();
+}
+
+const runHeroShimmer = () => {
+  if (heroShimmerPlayed || reduceMotion || touchDevice || mobile()) return;
+  heroShimmerPlayed = true;
+  const heroBrand = document.querySelector('.hero-brand');
+  if (!heroBrand) return;
+  window.setTimeout(() => {
+    heroBrand.classList.add('is-shimmering');
+    window.setTimeout(() => heroBrand.classList.remove('is-shimmering'), 1350);
+  }, 260);
+};
+
+const loadedClassObserver = new MutationObserver(() => {
+  if (document.body.classList.contains('is-loaded')) {
+    runHeroShimmer();
+    loadedClassObserver.disconnect();
+  }
+});
+loadedClassObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
 const refreshAfterLayoutChange = () => {
   window.clearTimeout(resizeTimer);
   resizeTimer = window.setTimeout(() => {

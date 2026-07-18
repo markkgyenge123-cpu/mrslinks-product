@@ -2820,6 +2820,314 @@ h2 {
   }
 }
 
+/* Cinematic chapter system */
+:root {
+  --chapter-rgb: 191, 247, 255;
+  --chapter-x: 72%;
+  --chapter-y: 34%;
+}
+
+.chapter-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.5;
+  background:
+    radial-gradient(
+      circle at var(--chapter-x) var(--chapter-y),
+      rgba(var(--chapter-rgb), 0.16) 0,
+      rgba(var(--chapter-rgb), 0.065) 18rem,
+      transparent 43rem
+    );
+  mix-blend-mode: screen;
+  transition: opacity 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity;
+}
+
+.chapter-ambient.is-changing {
+  opacity: 0.22;
+  transition-duration: 180ms;
+}
+
+.chapter-sweep {
+  position: fixed;
+  top: -20%;
+  left: -30vw;
+  z-index: 45;
+  width: 17vw;
+  height: 140%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--chapter-rgb), 0.035) 24%,
+    rgba(255, 255, 255, 0.18) 49%,
+    rgba(var(--chapter-rgb), 0.055) 66%,
+    transparent
+  );
+  filter: blur(20px);
+  mix-blend-mode: screen;
+  transform: skewX(-13deg);
+}
+
+.chapter-sweep.is-sweeping {
+  animation: chapter-sweep 580ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes chapter-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(0) skewX(-13deg);
+  }
+  20% {
+    opacity: 0.75;
+  }
+  70% {
+    opacity: 0.42;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(165vw) skewX(-13deg);
+  }
+}
+
+main,
+.site-footer {
+  position: relative;
+  z-index: 2;
+}
+
+.chapter-nav {
+  position: fixed;
+  top: 50%;
+  right: clamp(1rem, 2.4vw, 2.5rem);
+  z-index: 55;
+  display: grid;
+  justify-items: end;
+  gap: 1rem;
+  color: rgba(250, 249, 245, 0.86);
+  transform: translateY(-50%);
+}
+
+.chapter-readout {
+  display: grid;
+  justify-items: end;
+  min-width: 7.5rem;
+  transition:
+    opacity 145ms ease,
+    transform 145ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.chapter-readout.is-updating {
+  opacity: 0;
+  transform: translateY(-0.4rem);
+}
+
+.chapter-number {
+  color: rgba(var(--chapter-rgb), 0.82);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  transition: color 500ms ease;
+}
+
+.chapter-title {
+  margin-top: 0.3rem;
+  color: rgba(250, 249, 245, 0.82);
+  font-size: 0.66rem;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.chapter-rail {
+  position: relative;
+  display: flex;
+  width: 1rem;
+  height: 13rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chapter-rail::before,
+.chapter-progress {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 0.5px);
+  width: 1px;
+  height: 100%;
+  content: "";
+}
+
+.chapter-rail::before {
+  background: rgba(250, 249, 245, 0.13);
+}
+
+.chapter-progress {
+  z-index: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(var(--chapter-rgb), 0.72));
+  box-shadow: 0 0 12px rgba(var(--chapter-rgb), 0.34);
+  transform: scaleY(var(--chapter-progress, 0.142857));
+  transform-origin: top;
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 500ms ease;
+}
+
+.chapter-rail a {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.chapter-rail a span {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(250, 249, 245, 0.42);
+  transition:
+    width 220ms ease,
+    height 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.chapter-rail a:hover span,
+.chapter-rail a[aria-current="true"] span {
+  width: 7px;
+  height: 7px;
+  background: rgb(var(--chapter-rgb));
+  box-shadow: 0 0 14px rgba(var(--chapter-rgb), 0.7);
+}
+
+.chapter-rail a:focus-visible {
+  outline: 1px solid rgba(var(--chapter-rgb), 0.95);
+  outline-offset: 3px;
+}
+
+.chapter-mobile-count {
+  display: none;
+}
+
+.hero-brand.is-shimmering .word {
+  color: transparent;
+  background:
+    linear-gradient(
+      104deg,
+      rgba(247, 245, 239, 0.96) 12%,
+      rgba(247, 245, 239, 0.96) 37%,
+      rgba(198, 220, 225, 1) 46%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(205, 181, 225, 1) 55%,
+      rgba(247, 245, 239, 0.96) 64%
+    );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: hero-metal-shimmer 1.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hero-metal-shimmer {
+  from { background-position: 115% 0; }
+  to { background-position: -25% 0; }
+}
+
+@media (max-width: 860px), (pointer: coarse) {
+  .chapter-ambient {
+    opacity: 0.32;
+  }
+
+  .chapter-sweep {
+    display: none;
+  }
+
+  .chapter-nav {
+    top: auto;
+    right: auto;
+    bottom: max(0.8rem, env(safe-area-inset-bottom));
+    left: 0.65rem;
+    display: block;
+    pointer-events: none;
+    transform: none;
+  }
+
+  .chapter-readout {
+    display: none;
+  }
+
+  .chapter-rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 2px;
+    height: 100dvh;
+    display: block;
+  }
+
+  .chapter-rail::before,
+  .chapter-progress {
+    left: 0;
+    width: 2px;
+  }
+
+  .chapter-rail a {
+    display: none;
+  }
+
+  .chapter-mobile-count {
+    display: block;
+    color: rgba(250, 249, 245, 0.58);
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.8);
+  }
+
+  .hero-brand.is-shimmering .word {
+    color: inherit;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-ambient,
+  .chapter-readout,
+  .chapter-number,
+  .chapter-progress,
+  .chapter-rail a span {
+    transition: none;
+  }
+
+  .chapter-ambient.is-changing {
+    opacity: 0.5;
+  }
+
+  .chapter-sweep {
+    display: none;
+  }
+
+  .hero-brand.is-shimmering .word {
+    color: inherit;
+    background: none;
+    -webkit-text-fill-color: currentColor;
+    animation: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-snap-type: none;
