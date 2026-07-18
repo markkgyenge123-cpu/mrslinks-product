@@ -3257,7 +3257,10 @@ h2 {
   }
 
   .instagram-cta {
-    display: none;
+    display: inline-flex;
+    min-height: 2.25rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
   }
 
   .hero {
