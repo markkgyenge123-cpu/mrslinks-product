@@ -83,95 +83,47 @@ window.addEventListener('wheel', (event) => {
   scheduleGuidedSnap();
 }, { passive: true });
 
-// Scroll-synced video setup
+// Continuously playing decorative background video
 const scrollVideo = document.querySelector('.scroll-video');
-let videoDuration = 0;
-let videoTargetTime = 0;
-let videoDisplayTime = 0;
-let lastVideoSeekAt = 0;
-let videoRaf = 0;
-const videoEase = touchDevice ? 0.075 : 0.14;
-const videoSeekInterval = touchDevice ? 90 : 70;
 
 if (scrollVideo) {
-  const calculateVideoTarget = () => {
-    if (!videoDuration) return 0;
-    const scrollHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    const scrollPercent = Math.min(1, Math.max(0, window.scrollY / scrollHeight));
-    return scrollPercent * Math.max(0, videoDuration - 0.05);
-  };
-
-  const renderVideoFrame = () => {
-    videoRaf = 0;
-    if (!videoDuration) return;
-
-    const difference = videoTargetTime - videoDisplayTime;
-    if (Math.abs(difference) <= 0.015) {
-      videoDisplayTime = videoTargetTime;
-    } else {
-      videoDisplayTime += difference * videoEase;
-    }
-
-    const now = performance.now();
-    if (!scrollVideo.seeking && now - lastVideoSeekAt >= videoSeekInterval) {
-      scrollVideo.currentTime = videoDisplayTime;
-      lastVideoSeekAt = now;
-    }
-
-    const decoderIsBehind = Math.abs(scrollVideo.currentTime - videoTargetTime) > 0.03;
-    if (Math.abs(videoTargetTime - videoDisplayTime) > 0.015 || scrollVideo.seeking || decoderIsBehind) {
-      videoRaf = requestAnimationFrame(renderVideoFrame);
-    }
-  };
-
-  const updateVideoTarget = ({ immediate = false } = {}) => {
-    if (!videoDuration) return;
-    videoTargetTime = calculateVideoTarget();
-
-    if (immediate || reduceMotion) {
-      if (videoRaf) cancelAnimationFrame(videoRaf);
-      videoRaf = 0;
-      videoDisplayTime = videoTargetTime;
-      scrollVideo.currentTime = videoTargetTime;
+  const playBackgroundVideo = () => {
+    if (reduceMotion || document.hidden) {
+      scrollVideo.pause();
+      if (reduceMotion && scrollVideo.readyState >= 1) scrollVideo.currentTime = 0;
       return;
     }
 
-    if (!videoRaf) videoRaf = requestAnimationFrame(renderVideoFrame);
+    const playAttempt = scrollVideo.play();
+    if (playAttempt && typeof playAttempt.catch === 'function') {
+      playAttempt.catch(() => {
+        // Muted autoplay can still be blocked by browser or battery policies.
+        // The loaded first frame remains as a stable visual fallback.
+      });
+    }
   };
 
-  const initializeVideo = () => {
-    videoDuration = Number.isFinite(scrollVideo.duration) ? scrollVideo.duration : 0;
-    scrollVideo.pause();
-    updateVideoTarget({ immediate: true });
-  };
-
-  scrollVideo.pause();
   if (scrollVideo.readyState >= 1) {
-    initializeVideo();
+    playBackgroundVideo();
   } else {
-    scrollVideo.addEventListener('loadedmetadata', initializeVideo, { once: true });
+    scrollVideo.addEventListener('loadedmetadata', playBackgroundVideo, { once: true });
   }
-  scrollVideo.addEventListener('seeked', () => {
-    if (Math.abs(scrollVideo.currentTime - videoTargetTime) > 0.03 && !videoRaf && !reduceMotion) {
-      videoRaf = requestAnimationFrame(renderVideoFrame);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden || reduceMotion) {
+      scrollVideo.pause();
+    } else {
+      playBackgroundVideo();
     }
   });
-  scrollVideo.addEventListener('play', () => scrollVideo.pause());
-  window.addEventListener('scroll', () => updateVideoTarget(), { passive: true });
-  window.addEventListener('pageshow', () => updateVideoTarget({ immediate: true }));
+
+  window.addEventListener('pageshow', playBackgroundVideo);
 }
 
 const refreshAfterLayoutChange = () => {
   window.clearTimeout(resizeTimer);
   resizeTimer = window.setTimeout(() => {
     refreshScrollMetrics();
-    if (scrollVideo && videoDuration) {
-      videoTargetTime = Math.min(
-        Math.max(0, videoDuration - 0.05),
-        (window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight))
-          * Math.max(0, videoDuration - 0.05)
-      );
-    }
     if (hasScrollTrigger) ScrollTrigger.refresh();
   }, 140);
 };
