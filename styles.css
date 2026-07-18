@@ -3128,6 +3128,36 @@ main,
   }
 }
 
+/* Give section entrances depth without affecting layout or scroll position. */
+.section-heading,
+.intro-band,
+.contact,
+[data-reveal] {
+  will-change: transform, opacity, clip-path;
+}
+
+.section-heading .line,
+.intro-band .line,
+.contact .line {
+  overflow: hidden;
+  perspective: 700px;
+}
+
+.card-grid,
+.process-line,
+.audience-grid {
+  perspective: 1100px;
+}
+
+@media (max-width: 860px), (pointer: coarse) {
+  .section-heading,
+  .intro-band,
+  .contact,
+  [data-reveal] {
+    will-change: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-snap-type: none;
