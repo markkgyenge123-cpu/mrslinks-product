@@ -78,7 +78,7 @@ body {
   opacity: 1;
   mix-blend-mode: normal;
   pointer-events: none;
-  background: #09071d url("background-poster.png?v=20260719-2") center / cover no-repeat;
+  background: #09071d url("background-poster.png?v=20260719-3") center / cover no-repeat;
 }
 
 .scroll-video::-webkit-media-controls {
