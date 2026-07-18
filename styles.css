@@ -131,7 +131,7 @@ a {
   overflow: hidden;
   background: #000;
   pointer-events: none;
-  animation: preloaderFailsafe 1ms linear 5s forwards;
+  animation: preloaderFailsafe 1ms linear 3s forwards;
 }
 
 .preloader-veil {
@@ -224,6 +224,17 @@ a {
   font-size: clamp(0.82rem, 1.15vw, 1rem);
   font-style: italic;
   letter-spacing: 0.08em;
+}
+
+.preloader-line {
+  display: block;
+  width: min(13rem, 42vw);
+  height: 1px;
+  margin-top: clamp(0.45rem, 1.4vw, 0.9rem);
+  background: linear-gradient(90deg, transparent, rgba(248, 248, 246, 0.86), transparent);
+  box-shadow: 0 0 16px rgba(255,255,255,0.18);
+  transform: scaleX(0);
+  transform-origin: center;
 }
 
 .preloader-mark {
@@ -3090,7 +3101,7 @@ h2 {
 
 /* Smooth premium finish: final overrides for calmer motion and cleaner text. */
 .preloader {
-  animation: preloaderFailsafe 1ms linear 6.5s forwards;
+  animation: preloaderFailsafe 1ms linear 3s forwards;
 }
 
 .preloader-brush,
