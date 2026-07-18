@@ -6,27 +6,176 @@ const hasScrollTrigger = Boolean(window.ScrollTrigger);
 const hasSplitType = Boolean(window.SplitType);
 let lenis = null;
 
-// Scroll-synced video setup
-const scrollVideo = document.querySelector('.scroll-video');
-if (scrollVideo) {
-  let videoDuration = 0;
-  
-  scrollVideo.addEventListener('loadedmetadata', () => {
-    videoDuration = scrollVideo.duration;
+// Shared scroll state
+const sections = Array.from(document.querySelectorAll('.section'));
+let sectionOffsets = [];
+let snapTimer = 0;
+let snapUnlockTimer = 0;
+let resizeTimer = 0;
+let snapping = false;
+let wheelDirection = 0;
+let suppressSnapUntil = 0;
+
+const refreshScrollMetrics = () => {
+  sectionOffsets = sections.map((section) => section.offsetTop);
+};
+
+const cancelGuidedSnap = () => {
+  window.clearTimeout(snapTimer);
+  window.clearTimeout(snapUnlockTimer);
+  snapping = false;
+};
+
+const canGuidedSnap = () => (
+  Boolean(lenis)
+  && !touchDevice
+  && !reduceMotion
+  && document.body.classList.contains('is-loaded')
+  && performance.now() >= suppressSnapUntil
+);
+
+const settleToNearbySection = () => {
+  if (!canGuidedSnap() || !sectionOffsets.length) return;
+
+  const currentY = window.scrollY;
+  const threshold = Math.min(window.innerHeight * 0.28, 240);
+  let nearestOffset = sectionOffsets[0];
+  let nearestDistance = Math.abs(nearestOffset - currentY);
+
+  sectionOffsets.forEach((offset) => {
+    const distance = Math.abs(offset - currentY);
+    if (distance < nearestDistance) {
+      nearestOffset = offset;
+      nearestDistance = distance;
+    }
   });
 
-  const updateVideoOnScroll = () => {
-    if (!videoDuration) return;
-    
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercent = window.scrollY / scrollHeight;
-    const targetTime = scrollPercent * videoDuration;
-    
-    scrollVideo.currentTime = targetTime;
+  if (nearestDistance < 3 || nearestDistance > threshold) return;
+
+  // Avoid pulling backwards to a section the user has deliberately moved away from.
+  if (wheelDirection > 0 && nearestOffset < currentY && nearestDistance > threshold * 0.55) return;
+  if (wheelDirection < 0 && nearestOffset > currentY && nearestDistance > threshold * 0.55) return;
+
+  snapping = true;
+  lenis.scrollTo(nearestOffset, {
+    duration: 0.72,
+    force: true,
+    lock: false,
+    onComplete: () => {
+      snapping = false;
+    }
+  });
+
+  snapUnlockTimer = window.setTimeout(() => {
+    snapping = false;
+  }, 950);
+};
+
+const scheduleGuidedSnap = () => {
+  window.clearTimeout(snapTimer);
+  if (!canGuidedSnap()) return;
+  snapTimer = window.setTimeout(settleToNearbySection, 170);
+};
+
+window.addEventListener('wheel', (event) => {
+  wheelDirection = Math.sign(event.deltaY);
+  if (snapping) cancelGuidedSnap();
+  scheduleGuidedSnap();
+}, { passive: true });
+
+// Scroll-synced video setup
+const scrollVideo = document.querySelector('.scroll-video');
+let videoDuration = 0;
+let videoTargetTime = 0;
+let videoDisplayTime = 0;
+let lastVideoSeekAt = 0;
+let videoRaf = 0;
+
+if (scrollVideo) {
+  const calculateVideoTarget = () => {
+    if (!videoDuration) return 0;
+    const scrollHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const scrollPercent = Math.min(1, Math.max(0, window.scrollY / scrollHeight));
+    return scrollPercent * Math.max(0, videoDuration - 0.05);
   };
 
-  window.addEventListener('scroll', updateVideoOnScroll, { passive: true });
+  const renderVideoFrame = () => {
+    videoRaf = 0;
+    if (!videoDuration) return;
+
+    const difference = videoTargetTime - videoDisplayTime;
+    if (Math.abs(difference) <= 0.015) {
+      videoDisplayTime = videoTargetTime;
+    } else {
+      videoDisplayTime += difference * 0.14;
+    }
+
+    const now = performance.now();
+    if (!scrollVideo.seeking && now - lastVideoSeekAt >= 70) {
+      scrollVideo.currentTime = videoDisplayTime;
+      lastVideoSeekAt = now;
+    }
+
+    const decoderIsBehind = Math.abs(scrollVideo.currentTime - videoTargetTime) > 0.03;
+    if (Math.abs(videoTargetTime - videoDisplayTime) > 0.015 || scrollVideo.seeking || decoderIsBehind) {
+      videoRaf = requestAnimationFrame(renderVideoFrame);
+    }
+  };
+
+  const updateVideoTarget = ({ immediate = false } = {}) => {
+    if (!videoDuration) return;
+    videoTargetTime = calculateVideoTarget();
+
+    if (immediate || reduceMotion) {
+      if (videoRaf) cancelAnimationFrame(videoRaf);
+      videoRaf = 0;
+      videoDisplayTime = videoTargetTime;
+      scrollVideo.currentTime = videoTargetTime;
+      return;
+    }
+
+    if (!videoRaf) videoRaf = requestAnimationFrame(renderVideoFrame);
+  };
+
+  const initializeVideo = () => {
+    videoDuration = Number.isFinite(scrollVideo.duration) ? scrollVideo.duration : 0;
+    scrollVideo.pause();
+    updateVideoTarget({ immediate: true });
+  };
+
+  scrollVideo.pause();
+  if (scrollVideo.readyState >= 1) {
+    initializeVideo();
+  } else {
+    scrollVideo.addEventListener('loadedmetadata', initializeVideo, { once: true });
+  }
+  scrollVideo.addEventListener('seeked', () => {
+    if (Math.abs(scrollVideo.currentTime - videoTargetTime) > 0.03 && !videoRaf && !reduceMotion) {
+      videoRaf = requestAnimationFrame(renderVideoFrame);
+    }
+  });
+  scrollVideo.addEventListener('play', () => scrollVideo.pause());
+  window.addEventListener('scroll', () => updateVideoTarget(), { passive: true });
+  window.addEventListener('pageshow', () => updateVideoTarget({ immediate: true }));
 }
+
+const refreshAfterLayoutChange = () => {
+  window.clearTimeout(resizeTimer);
+  resizeTimer = window.setTimeout(() => {
+    refreshScrollMetrics();
+    if (scrollVideo && videoDuration) {
+      videoTargetTime = Math.min(
+        Math.max(0, videoDuration - 0.05),
+        (window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight))
+          * Math.max(0, videoDuration - 0.05)
+      );
+    }
+    if (hasScrollTrigger) ScrollTrigger.refresh();
+  }, 140);
+};
+
+refreshScrollMetrics();
+window.addEventListener('resize', refreshAfterLayoutChange, { passive: true });
 
 document.body.classList.add('is-loading');
 
@@ -42,6 +191,7 @@ const showContentImmediately = () => {
     item.style.transform = 'none';
   });
   document.querySelector('.preloader')?.remove();
+  refreshScrollMetrics();
 };
 
 if (!hasGsap || !hasScrollTrigger || reduceMotion) {
@@ -51,7 +201,7 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
 
   if (window.Lenis && !touchDevice) {
     lenis = new Lenis({
-      duration: 1.08,
+      duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
       anchors: false
@@ -95,6 +245,8 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
       document.body.classList.remove('is-loading');
       document.body.classList.add('is-loaded');
       document.querySelector('.preloader')?.remove();
+      refreshScrollMetrics();
+      ScrollTrigger.refresh();
     }
   });
 
@@ -138,6 +290,8 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     .to('.ghost-button', { autoAlpha: 1, y: 0, filter: 'blur(0px)', stagger: 0.08, duration: 0.62 }, 'heroReveal+=1.02')
     .to('.hero-visual', { autoAlpha: 1, y: 0, filter: 'blur(0px)', duration: 0.82, ease: 'power3.out' }, 'heroReveal+=0.68')
     .to('.hero-rule', { autoAlpha: 0.38, clipPath: 'inset(0 0% 0 0%)', duration: 0.72, ease: 'power3.inOut' }, 'heroReveal+=1.25');
+
+  introTimeline.timeScale(1.35);
 
   gsap.to('.hero-inner', {
     y: -48,
@@ -359,8 +513,16 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     if (!target) return;
 
     event.preventDefault();
+    cancelGuidedSnap();
+    suppressSnapUntil = performance.now() + 1200;
     if (lenis && !reduceMotion) {
-      lenis.scrollTo(target, { offset: -20, duration: 1.1 });
+      lenis.scrollTo(target, {
+        offset: -20,
+        duration: 1.1,
+        onComplete: () => {
+          refreshScrollMetrics();
+        }
+      });
     } else {
       target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
     }
