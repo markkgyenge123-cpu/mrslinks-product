@@ -84,6 +84,13 @@ body {
   display: none !important;
 }
 
+.scroll-video::-webkit-media-controls-enclosure,
+.scroll-video::-webkit-media-controls-panel,
+.scroll-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 .scroll-video::-moz-media-controls {
   display: none !important;
 }

@@ -87,6 +87,15 @@ window.addEventListener('wheel', (event) => {
 const scrollVideo = document.querySelector('.scroll-video');
 
 if (scrollVideo) {
+  scrollVideo.muted = true;
+  scrollVideo.defaultMuted = true;
+  scrollVideo.playsInline = true;
+  scrollVideo.controls = false;
+  scrollVideo.disablePictureInPicture = true;
+  scrollVideo.setAttribute('muted', '');
+  scrollVideo.setAttribute('playsinline', '');
+  scrollVideo.setAttribute('webkit-playsinline', '');
+
   const playBackgroundVideo = () => {
     if (reduceMotion || document.hidden) {
       scrollVideo.pause();
@@ -108,6 +117,8 @@ if (scrollVideo) {
   } else {
     scrollVideo.addEventListener('loadedmetadata', playBackgroundVideo, { once: true });
   }
+  scrollVideo.addEventListener('loadeddata', playBackgroundVideo, { once: true });
+  scrollVideo.addEventListener('canplay', playBackgroundVideo, { once: true });
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden || reduceMotion) {
@@ -118,6 +129,8 @@ if (scrollVideo) {
   });
 
   window.addEventListener('pageshow', playBackgroundVideo);
+  window.addEventListener('pointerdown', playBackgroundVideo, { once: true, passive: true });
+  window.addEventListener('touchstart', playBackgroundVideo, { once: true, passive: true });
 }
 
 const refreshAfterLayoutChange = () => {
