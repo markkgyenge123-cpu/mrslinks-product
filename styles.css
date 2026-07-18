@@ -2540,15 +2540,6 @@ h2 {
 }
 
 @media (max-width: 860px) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-
-  .section {
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
-  }
-
   .nav-links,
   .cursor,
   .hero-depth,
@@ -2660,17 +2651,6 @@ h2 {
 
   .product-mini-card {
     left: 0.25rem;
-  }
-}
-
-@media (pointer: coarse) {
-  html {
-    scroll-snap-type: y proximity;
-  }
-
-  .section {
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
   }
 }
 

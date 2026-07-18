@@ -90,6 +90,8 @@ let videoTargetTime = 0;
 let videoDisplayTime = 0;
 let lastVideoSeekAt = 0;
 let videoRaf = 0;
+const videoEase = touchDevice ? 0.075 : 0.14;
+const videoSeekInterval = touchDevice ? 90 : 70;
 
 if (scrollVideo) {
   const calculateVideoTarget = () => {
@@ -107,11 +109,11 @@ if (scrollVideo) {
     if (Math.abs(difference) <= 0.015) {
       videoDisplayTime = videoTargetTime;
     } else {
-      videoDisplayTime += difference * 0.14;
+      videoDisplayTime += difference * videoEase;
     }
 
     const now = performance.now();
-    if (!scrollVideo.seeking && now - lastVideoSeekAt >= 70) {
+    if (!scrollVideo.seeking && now - lastVideoSeekAt >= videoSeekInterval) {
       scrollVideo.currentTime = videoDisplayTime;
       lastVideoSeekAt = now;
     }
