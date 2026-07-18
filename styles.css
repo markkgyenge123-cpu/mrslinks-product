@@ -2572,9 +2572,15 @@ h2 {
   .particles,
   .edge-scratches,
   .brush-flash,
+  .smoke,
   .smoke-three,
   .smoke-four {
     display: none;
+  }
+
+  .grain {
+    opacity: 0.06;
+    animation: none;
   }
 
   .card-grid,

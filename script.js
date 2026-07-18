@@ -38,7 +38,7 @@ const settleToNearbySection = () => {
   if (!canGuidedSnap() || !sectionOffsets.length) return;
 
   const currentY = window.scrollY;
-  const threshold = Math.min(window.innerHeight * 0.28, 240);
+  const threshold = Math.min(window.innerHeight * 0.18, 160);
   let nearestOffset = sectionOffsets[0];
   let nearestDistance = Math.abs(nearestOffset - currentY);
 
@@ -58,7 +58,7 @@ const settleToNearbySection = () => {
 
   snapping = true;
   lenis.scrollTo(nearestOffset, {
-    duration: 0.72,
+    duration: 0.55,
     force: true,
     lock: false,
     onComplete: () => {
@@ -68,13 +68,13 @@ const settleToNearbySection = () => {
 
   snapUnlockTimer = window.setTimeout(() => {
     snapping = false;
-  }, 950);
+  }, 760);
 };
 
 const scheduleGuidedSnap = () => {
   window.clearTimeout(snapTimer);
   if (!canGuidedSnap()) return;
-  snapTimer = window.setTimeout(settleToNearbySection, 170);
+  snapTimer = window.setTimeout(settleToNearbySection, 190);
 };
 
 window.addEventListener('wheel', (event) => {
@@ -251,12 +251,12 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
     .to('.hero-rule', { autoAlpha: 0.38, clipPath: 'inset(0 0% 0 0%)', duration: 0.72, ease: 'power3.inOut' }, 'heroReveal+=1.25');
 
   gsap.to('.hero-inner', {
-    y: -48,
+    y: touchDevice ? -12 : -28,
     scrollTrigger: {
       trigger: '.hero',
       start: 'top top',
       end: 'bottom top',
-      scrub: 1.1
+      scrub: touchDevice ? 0.6 : 0.85
     }
   });
 
@@ -292,43 +292,41 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
   });
 
   gsap.to('.hero-visual', {
-    y: 18,
-    opacity: 0.78,
-    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.2 }
+    y: touchDevice ? 6 : 12,
+    opacity: 0.86,
+    scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: touchDevice ? 0.5 : 0.9 }
   });
 
   document.querySelectorAll('[data-reveal]').forEach((item) => {
     const textBits = item.querySelectorAll('.line, .word');
-    gsap.fromTo(item, { autoAlpha: 0, y: 46, filter: 'blur(10px)' }, {
+    gsap.fromTo(item, { autoAlpha: 0, y: touchDevice ? 10 : 18 }, {
       autoAlpha: 1,
       y: 0,
-      filter: 'blur(0px)',
-      duration: 1.05,
-      ease: 'power4.out',
-      scrollTrigger: { trigger: item, start: 'top 82%' }
+      duration: touchDevice ? 0.5 : 0.68,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: item, start: 'top 84%' }
     });
 
     if (textBits.length) {
       gsap.from(textBits, {
-        y: 22,
+        y: touchDevice ? 6 : 12,
         autoAlpha: 0,
-        stagger: 0.035,
-        duration: 0.72,
+        stagger: touchDevice ? 0.015 : 0.025,
+        duration: touchDevice ? 0.42 : 0.55,
         ease: 'power3.out',
-        scrollTrigger: { trigger: item, start: 'top 82%' }
+        scrollTrigger: { trigger: item, start: 'top 84%' }
       });
     }
   });
 
   gsap.utils.toArray('[data-card]').forEach((card, index) => {
-    gsap.fromTo(card, { autoAlpha: 0, y: 58, rotateX: 10 }, {
+    gsap.fromTo(card, { autoAlpha: 0, y: touchDevice ? 12 : 24 }, {
       autoAlpha: 1,
       y: 0,
-      rotateX: 0,
-      duration: 0.95,
-      delay: index * 0.08,
-      ease: 'power4.out',
-      scrollTrigger: { trigger: card, start: 'top 86%' }
+      duration: touchDevice ? 0.48 : 0.68,
+      delay: index * (touchDevice ? 0.025 : 0.05),
+      ease: 'power3.out',
+      scrollTrigger: { trigger: card, start: 'top 88%' }
     });
 
     const paths = card.querySelectorAll('path, rect');
@@ -337,7 +335,7 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
       gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
       gsap.to(path, {
         strokeDashoffset: 0,
-        duration: 1.15,
+        duration: touchDevice ? 0.7 : 0.95,
         ease: 'power3.out',
         scrollTrigger: { trigger: card, start: 'top 82%' }
       });
@@ -360,12 +358,12 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
       once: true,
       onEnter: () => {
         step.classList.add('is-active');
-        gsap.to(step, { autoAlpha: 1, y: 0, duration: 0.75, ease: 'power3.out' });
+        gsap.to(step, { autoAlpha: 1, y: 0, duration: touchDevice ? 0.45 : 0.62, ease: 'power3.out' });
         const number = step.querySelector('.process-number');
         const finalValue = Number(step.dataset.final || index + 1);
         gsap.fromTo({ value: 0 }, { value: 0 }, {
           value: finalValue,
-          duration: 0.9,
+          duration: touchDevice ? 0.55 : 0.75,
           ease: 'power3.out',
           onUpdate() {
             number.textContent = String(Math.round(this.targets()[0].value)).padStart(2, '0');
@@ -376,22 +374,21 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
   });
 
   gsap.utils.toArray('.audience-grid article, .quality-points span').forEach((item, index) => {
-    gsap.fromTo(item, { autoAlpha: 0, y: 38 }, {
+    gsap.fromTo(item, { autoAlpha: 0, y: touchDevice ? 8 : 18 }, {
       autoAlpha: 1,
       y: 0,
-      duration: 0.8,
-      delay: index * 0.07,
+      duration: touchDevice ? 0.42 : 0.6,
+      delay: index * (touchDevice ? 0.02 : 0.045),
       ease: 'power3.out',
       scrollTrigger: { trigger: item, start: 'top 88%' }
     });
   });
 
-  gsap.fromTo('.contact', { autoAlpha: 0, y: 60, scale: 0.985 }, {
+  gsap.fromTo('.contact', { autoAlpha: 0, y: touchDevice ? 10 : 24 }, {
     autoAlpha: 1,
     y: 0,
-    scale: 1,
-    duration: 1.1,
-    ease: 'power4.out',
+    duration: touchDevice ? 0.5 : 0.72,
+    ease: 'power3.out',
     scrollTrigger: {
       trigger: '.contact',
       start: 'top 78%',
