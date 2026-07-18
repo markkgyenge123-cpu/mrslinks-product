@@ -7,3 +7,11 @@ Thumbs.db
 !.dev.vars.example
 .env*
 !.env.example
+
+# Local source and superseded video exports (not deployment assets)
+19933501-uhd_2160_3840_60fps.mp4
+uhd_30fps.mp4
+background-scroll-720p.m4v
+background-scroll-mobile.m4v
+background-new-720p.m4v
+background-new-mobile.m4v
