@@ -6,6 +6,28 @@ const hasScrollTrigger = Boolean(window.ScrollTrigger);
 const hasSplitType = Boolean(window.SplitType);
 let lenis = null;
 
+// Scroll-synced video setup
+const scrollVideo = document.querySelector('.scroll-video');
+if (scrollVideo) {
+  let videoDuration = 0;
+  
+  scrollVideo.addEventListener('loadedmetadata', () => {
+    videoDuration = scrollVideo.duration;
+  });
+
+  const updateVideoOnScroll = () => {
+    if (!videoDuration) return;
+    
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = window.scrollY / scrollHeight;
+    const targetTime = scrollPercent * videoDuration;
+    
+    scrollVideo.currentTime = targetTime;
+  };
+
+  window.addEventListener('scroll', updateVideoOnScroll, { passive: true });
+}
+
 document.body.classList.add('is-loading');
 
 const showContentImmediately = () => {
