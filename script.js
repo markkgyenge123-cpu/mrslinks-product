@@ -284,7 +284,7 @@ document.body.classList.add('is-loading');
 const showContentImmediately = () => {
   document.body.classList.remove('is-loading');
   document.body.classList.add('is-loaded');
-  document.querySelectorAll('[data-reveal], [data-card], [data-step], .audience-grid article, .quality-points span').forEach((item) => {
+  document.querySelectorAll('[data-reveal], [data-card], [data-step], [data-showcase], .audience-grid article, .quality-points span').forEach((item) => {
     item.style.opacity = '1';
     item.style.transform = 'none';
   });
@@ -557,6 +557,66 @@ if (!hasGsap || !hasScrollTrigger || reduceMotion) {
       scrollTrigger: { trigger: item, start: 'top 90%', once: true }
     });
   });
+
+  const selectedWork = document.querySelector('[data-showcase]');
+  if (selectedWork) {
+    const showcaseTimeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: selectedWork,
+        start: 'top 82%',
+        once: true
+      }
+    });
+
+    showcaseTimeline
+      .fromTo(selectedWork, {
+        autoAlpha: 0,
+        y: touchDevice ? 24 : 70,
+        scale: touchDevice ? 0.99 : 0.96
+      }, {
+        autoAlpha: 1,
+        y: 0,
+        scale: 1,
+        duration: touchDevice ? 0.72 : 1.05,
+        ease: 'power4.out'
+      })
+      .from('.selected-work-copy > *', {
+        autoAlpha: 0,
+        y: touchDevice ? 14 : 28,
+        stagger: touchDevice ? 0.045 : 0.075,
+        duration: touchDevice ? 0.5 : 0.7,
+        ease: 'power3.out'
+      }, touchDevice ? '-=0.42' : '-=0.68')
+      .from('.dashboard-frame', {
+        autoAlpha: 0,
+        x: touchDevice ? 24 : 90,
+        rotateY: touchDevice ? -4 : -20,
+        duration: touchDevice ? 0.72 : 1.08,
+        ease: 'power4.out'
+      }, touchDevice ? '-=0.48' : '-=0.78')
+      .from('.phone-frame', {
+        autoAlpha: 0,
+        x: touchDevice ? 18 : 54,
+        y: touchDevice ? 18 : 46,
+        rotate: 12,
+        duration: touchDevice ? 0.68 : 0.92,
+        ease: 'back.out(1.25)'
+      }, '-=0.6')
+      .from('.chart-bars i', {
+        scaleY: 0,
+        transformOrigin: 'bottom',
+        stagger: 0.045,
+        duration: 0.55,
+        ease: 'power3.out'
+      }, '-=0.55')
+      .from('.showcase-note', {
+        autoAlpha: 0,
+        scale: 0.8,
+        stagger: 0.08,
+        duration: 0.45,
+        ease: 'back.out(1.5)'
+      }, '-=0.35');
+  }
 
   gsap.fromTo('.contact', {
     autoAlpha: 0,

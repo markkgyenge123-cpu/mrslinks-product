@@ -1,0 +1,8 @@
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/favicon.svg
+  Cache-Control: public, max-age=86400
