@@ -3549,6 +3549,50 @@ main,
   }
 }
 
+/* Final interaction polish */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(191, 247, 255, 0.7);
+  border-radius: 999px;
+  background: #08080b;
+  color: #f8f6ef;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: translateY(-160%);
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+a:focus-visible {
+  outline: 2px solid rgba(var(--chapter-rgb), 0.95);
+  outline-offset: 4px;
+}
+
+.section {
+  scroll-margin-top: 5.5rem;
+}
+
+@media (max-width: 560px) {
+  .section {
+    scroll-margin-top: 4.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chapter-ambient,
   .chapter-readout,
